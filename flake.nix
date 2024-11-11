@@ -41,15 +41,16 @@
 
       nixosModules = rec {
 
-        mac-keymock = ./modules;
-        default = mac-keymock;
+        macos-keybindings = ./modules;
+        default = macos-keybindings;
 
-        kwin-manager = inputs.nixpkgs.lib.mkIf (mac-keymock.wm == "KWin") (
-          import kwin-manager { mac-keymock = mac-keymock; }
+        kwin-manager = inputs.nixpkgs.lib.mkIf (macos-keybindings.wm == "KWin") (
+          #import kwin-manager { macos-keybindings = macos-keybindings; }
+          kwin-manager
         );
 
-        plasma-manager = inputs.nixpkgs.lib.mkIf (mac-keymock.de == "Plasma") (
-          import plasma-manager { mac-keymock = mac-keymock; }
+        plasma-manager = inputs.nixpkgs.lib.mkIf (macos-keybindings.de == "Plasma") (
+          plasma-manager
         );
       };
     };

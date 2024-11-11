@@ -1,4 +1,3 @@
-{ mac-keymock }:
 { pkgs, config, ... }:
 {
   home.stateVersion = "23.11";
