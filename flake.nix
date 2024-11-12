@@ -20,38 +20,29 @@
 
   outputs =
     { self, ... }@inputs:
-    let
-      plasma-manager = inputs.home-manager.nixosModules.home-manager {
-        home-manager.backupFileExtension = "hm-backup";
-        home-manager.useGlobalPkgs = true;
-        home-manager.useUserPackages = true;
-        home-manager.sharedModules = [ inputs.plasma-manager.homeManagerModules.plasma-manager ];
-        home-manager.users.michael = import ./plasma.nix;
-      };
-
-      kwin-manager = inputs.home-manager.nixosModules.home-manager {
-        home-manager.backupFileExtension = "hm-backup";
-        home-manager.useGlobalPkgs = true;
-        home-manager.useUserPackages = true;
-        home-manager.sharedModules = [ inputs.plasma-manager.homeManagerModules.plasma-manager ];
-        home-manager.users.michael = import ./kwin.nix;
-      };
-    in
     {
-
       nixosModules = rec {
+        #macos-keybindings = (import ./modules);
+        home-manager = inputs.home-manager.nixosModules.home-manager;
+        macos-keybindings = (import ./modules {inherit (inputs) home-manager plasma-manager;});
+        
+        #macos-keybindings = (import ./modules);
+        #macos-keybindings = (import ./modules {inherit inputs;}) // {home-manager = inputs.home-manager; plasma-manager = inputs.plasma-manager;};
+        # macos-keybindings = inputs.nixpkgs.lib.mkMerge [
+        #   (import ./modules)
 
-        macos-keybindings = ./modules;
+        #   {plasma-manager = inputs.plasma-manager;}
+        # ];
+
+        # macos-keybindings = rec {
+        #   inherit (import ./modules);
+        #   #home-manager = inputs.home-manager;
+        #   #inherit (inputs) plasma-manager;
+        # };
+
+        
+
         default = macos-keybindings;
-
-        kwin-manager = inputs.nixpkgs.lib.mkIf (macos-keybindings.wm == "KWin") (
-          #import kwin-manager { macos-keybindings = macos-keybindings; }
-          kwin-manager
-        );
-
-        plasma-manager = inputs.nixpkgs.lib.mkIf (macos-keybindings.de == "Plasma") (
-          plasma-manager
-        );
       };
     };
 }
