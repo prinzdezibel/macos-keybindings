@@ -4,12 +4,12 @@
   inputs = {
 
     # Nix Package Manager
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    # nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
-    home-manager = {
-      url = "github:nix-community/home-manager?ref=master";
-      #inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # home-manager = {
+    #   url = "github:nix-community/home-manager";
+    #   #inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
@@ -19,15 +19,40 @@
   };
 
   outputs =
-    { self, ... }@inputs:
+    {
+      self,
+      home-manager,
+      plasma-manager,
+      nixpkgs,
+      ...
+    }@inputs:
     let
-      home-manager = inputs.home-manager.nixosModules.home-manager;
-      plasma-manager = inputs.plasma-manager.homeManagerModules.plasma-manager; 
+      home-manager-module = home-manager.nixosModules.home-manager;
+      plasma-manager-module = plasma-manager.homeManagerModules.plasma-manager;
     in
     {
       nixosModules = rec {
-        macos-keybindings = (import ./modules {inherit home-manager plasma-manager;});
-        default = macos-keybindings;
+
+        macos-keybindings = (
+          {
+            config,
+            lib,
+            pkgs,
+            utils,
+            ...
+          }@inputs:
+          (import ./modules (
+            {
+              config = config;
+              lib = lib;
+              pkgs = pkgs;
+            }
+            // {
+              home-manager = home-manager-module;
+              plasma-manager = plasma-manager-module;
+            }
+          ))
+        );
       };
     };
 }

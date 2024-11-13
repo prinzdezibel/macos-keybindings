@@ -1,4 +1,10 @@
-{ pkgs, lib, app-keybindings, wm, ... }:
+{
+  pkgs,
+  lib,
+  apps,
+  wm,
+  ...
+}:
 let
   linuxNegativeBindings =
     pkgs.fetchFromGitHub {
@@ -28,32 +34,31 @@ let
     system = pkgs.system;
   };
 
-#   fsKwinScript = lib.fileset;
-#   dKwinScript = pkgs.stdenv.mkDerivation {
-#     name = "fileset";
-#     src = fsKwinScript.toSource {
-#       root = ./../script;
-#       fileset = ./../script;
-#     };
-#     postInstall = ''
-#       mkdir $out
-#       cp -R * $out
-#     '';
-#   };
+  #   fsKwinScript = lib.fileset;
+  #   dKwinScript = pkgs.stdenv.mkDerivation {
+  #     name = "fileset";
+  #     src = fsKwinScript.toSource {
+  #       root = ./../script;
+  #       fileset = ./../script;
+  #     };
+  #     postInstall = ''
+  #       mkdir $out
+  #       cp -R * $out
+  #     '';
+  #   };
 
-#   fsKeymapperConfig = lib.fileset;
-#   dKeymapperConfig = pkgs.stdenv.mkDerivation {
-#     name = "fileset";
-#     src = fsKeymapperConfig.toSource {
-#       root = ./..;
-#       fileset = ./../keymapper.conf;
-#     };
-#     postInstall = ''
-#       mkdir $out
-#       cp keymapper.conf $out
-#     '';
-#   };
-
+  #   fsKeymapperConfig = lib.fileset;
+  #   dKeymapperConfig = pkgs.stdenv.mkDerivation {
+  #     name = "fileset";
+  #     src = fsKeymapperConfig.toSource {
+  #       root = ./..;
+  #       fileset = ./../keymapper.conf;
+  #     };
+  #     postInstall = ''
+  #       mkdir $out
+  #       cp keymapper.conf $out
+  #     '';
+  #   };
 
 in
 {
@@ -61,7 +66,7 @@ in
 
   # Kernel level key remapping happens via keymapper
   home.file.".config/keymapper.conf".source = ../keymapper.conf;
-  
+
   # KWin Script to make Keymapper application aware 
   # (i.e. it knows about different window classes)
   home.file.".local/share/kwin/scripts/keymapper" = lib.mkIf (wm == "KWin") {
@@ -71,10 +76,8 @@ in
 
   # Application mapping, e.g. VS Code
   home.file.".config/Code/User/keybindings.json".source = lib.mkIf (
-    (__length (builtins.filter (x: x == "vs-code") app-keybindings)) != 0
+    (__length (builtins.filter (x: x == "vs-code") apps)) != 0
   ) dVsCodeKeybindings;
-  
-  
 
   # no HM
   #   systemd.user.services.keymapper = {
@@ -91,15 +94,15 @@ in
   #       ExecStart = "${pkgs.keymapper}/bin/keymapper --update --no-notify --verbose";
   #     };
 
-    systemd.user.services.keymapper = {
-      Unit.Description = "Keymapper client";
-      Install.WantedBy = [ "graphical-session.target" ];
-      Service = {
-        Type = "simple";
-        Restart = "on-failure";
-        StandardOutput = "journal";
-        StandardError = "journal";
-        ExecStart = "${pkgs.keymapper}/bin/keymapper --update --no-notify --verbose";
-      };
+  systemd.user.services.keymapper = {
+    Unit.Description = "Keymapper client";
+    Install.WantedBy = [ "graphical-session.target" ];
+    Service = {
+      Type = "simple";
+      Restart = "on-failure";
+      StandardOutput = "journal";
+      StandardError = "journal";
+      ExecStart = "${pkgs.keymapper}/bin/keymapper --update --no-notify --verbose";
     };
+  };
 }

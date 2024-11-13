@@ -1,47 +1,36 @@
-{ home-manager, plasma-manager, ... }:
 {
   config,
   lib,
   pkgs,
-  utils,
+  home-manager ? (
+    let
+      nixpkgs = import <nixpkgs> { };
+      home-manager-source = nixpkgs.fetchFromGitHub {
+        owner = "nix-community";
+        repo = "home-manager";
+        rev = "master";
+        sha256 = "sha256-NjavpgE9/bMe/ABvZpyHIUeYF1mqR5lhaep3wB79ucs=";
+      };
+    in
+    (import "${home-manager-source}/nixos")
+  ),
+  plasma-manager ? (
+    let
+      nixpkgs = import <nixpkgs> { };
+      plasma-manager-source = nixpkgs.fetchFromGitHub {
+        owner = "nix-community";
+        repo = "plasma-manager";
+        rev = "master";
+        sha256 = "sha256-pGF8L5g9QpkQtJP9JmNIRNZfcyhJHf7uT+d8tqI1h6Y=";
+      };
+    in
+    (import "${plasma-manager-source}/modules")
+  ),
   ...
 }:
 {
-  
   imports = [
-    # Keymapper config
-    home-manager
-    {
-      home-manager.backupFileExtension = "hm-backup";
-      home-manager.useGlobalPkgs = true;
-      home-manager.useUserPackages = true;
 
-      home-manager.users = builtins.listToAttrs (
-        map (
-          {
-            user,
-            app-keybindings,
-            wm,
-            ...
-          }:
-          {
-            name = user;
-            value = (
-              import ./keymapper.nix {
-                inherit
-                  pkgs
-                  lib
-                  app-keybindings
-                  wm
-                  ;
-              }
-            );
-          }
-        ) config.accounts
-      );
-    }
-
-    # Kwin config
     home-manager
     {
       home-manager.backupFileExtension = "hm-backup";
@@ -49,78 +38,96 @@
       home-manager.useUserPackages = true;
       home-manager.sharedModules = [ plasma-manager ];
 
-      home-manager.users = builtins.listToAttrs (
-        map (
-          {
-            user,
-            app-keybindings,
-            wm,
-            de,
-          }:
-          {
-            name = user;
-            value = (
-              import ./kwin.nix {
-                inherit
-                  pkgs
-                  lib
-                  app-keybindings
-                  de
-                  wm
-                  ;
+      home-manager.users = lib.mkMerge [
+
+        # Keymapper config
+        (builtins.listToAttrs (
+          map (
+            {
+              user,
+              apps,
+              wm,
+              ...
+            }:
+            {
+              name = user;
+              value = (
+                import ./keymapper.nix {
+                  inherit
+                    pkgs
+                    lib
+                    apps
+                    wm
+                    ;
+                }
+              );
+            }
+          ) config.macos-keybindings
+        ))
+
+        # Kwin config
+        (builtins.listToAttrs (
+          map (
+            {
+              user,
+              apps,
+              wm,
+              de,
+            }:
+            {
+              name = user;
+              value = (
+                import ./kwin.nix {
+                  inherit
+                    pkgs
+                    lib
+                    apps
+                    de
+                    wm
+                    ;
+                }
+              );
+            }
+          ) (builtins.filter (x: x.wm == "KWin") config.macos-keybindings)
+        ))
+
+        (
+          # Plasma config
+          builtins.listToAttrs (
+            map (
+              {
+                user,
+                apps,
+                wm,
+                de,
+              }:
+              {
+                name = user;
+                value = (
+                  import ./plasma.nix {
+                    inherit
+                      pkgs
+                      lib
+                      apps
+                      de
+                      wm
+                      ;
+                  }
+                );
               }
-            );
-          }
-        ) (builtins.filter (x: x.wm == "KWin") config.accounts)
-      );
+            ) (builtins.filter (x: x.wm == "Plasma") config.macos-keybindings)
+          )
+
+        )
+
+      ];
     }
 
-    # Plasma config
-    home-manager
-    {
-      home-manager.backupFileExtension = "hm-backup";
-      home-manager.useGlobalPkgs = true;
-      home-manager.useUserPackages = true;
-      home-manager.sharedModules = [ plasma-manager ];
-
-      home-manager.users = builtins.listToAttrs (
-        map (
-          {
-            user,
-            app-keybindings,
-            wm,
-            de,
-          }:
-          {
-            name = user;
-            value = (
-              import ./plasma.nix {
-                inherit
-                  pkgs
-                  lib
-                  app-keybindings
-                  de
-                  wm
-                  ;
-              }
-            );
-          }
-        ) (builtins.filter (x: x.wm == "Plasma") config.accounts)
-      );
-     }
   ];
 
   options = {
 
-
-  #  home-manager = lib.mkOptions {
-
-  #  };
-  #  plasma-manager = lib.mkOptions {
-
-  #  };
-
-    accounts = lib.mkOption {
+    macos-keybindings = lib.mkOption {
       default = [ ];
       type = lib.types.listOf (
         lib.types.submodule {
@@ -129,19 +136,19 @@
               type = lib.types.str;
             };
 
-            app-keybindings = lib.mkOption {
+            apps = lib.mkOption {
               default = [ ];
               type = lib.types.listOf (lib.types.enum [ "vs-code" ]);
             };
 
             wm = lib.mkOption {
-              type = lib.types.enum [ "KWin" ];
-              default = "KWin";
+              default = null;
+              type = lib.types.nullOr (lib.types.enum [ "KWin" ]);
             };
 
             de = lib.mkOption {
-              type = lib.types.enum [ "Plasma" ];
-              default = "Plasma";
+              default = null;
+              type = lib.types.nullOr (lib.types.enum [ "Plasma" ]);
             };
           };
         }
@@ -151,7 +158,7 @@
   };
 
   config = {
-    environment.systemPackages = with pkgs; [ pkgs.keymapper ];
+    environment.systemPackages = [ pkgs.keymapper ];
 
     systemd.services.keymapperd = {
       enable = true;
