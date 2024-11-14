@@ -2,32 +2,65 @@
   config,
   lib,
   pkgs,
-  home-manager ? (
-    let
-      nixpkgs = import <nixpkgs> { };
-      home-manager-source = nixpkgs.fetchFromGitHub {
-        owner = "nix-community";
-        repo = "home-manager";
-        rev = "master";
-        sha256 = "sha256-NjavpgE9/bMe/ABvZpyHIUeYF1mqR5lhaep3wB79ucs=";
-      };
-    in
-    (import "${home-manager-source}/nixos")
-  ),
-  plasma-manager ? (
-    let
-      nixpkgs = import <nixpkgs> { };
-      plasma-manager-source = nixpkgs.fetchFromGitHub {
-        owner = "nix-community";
-        repo = "plasma-manager";
-        rev = "master";
-        sha256 = "sha256-pGF8L5g9QpkQtJP9JmNIRNZfcyhJHf7uT+d8tqI1h6Y=";
-      };
-    in
-    (import "${plasma-manager-source}/modules")
-  ),
+  _home-manager ? null,
+  _plasma-manager ? null,
+  #_home-manager ? (
+  #  with rec {
+  #    nixpkgs = import <nixpkgs> { };
+  #    home-manager-source = nixpkgs.fetchFromGitHub {
+  #      owner = "nix-community";
+  #      repo = "home-manager";
+  #      rev = "60bb110917844d354f3c18e05450606a435d2d10";
+  #      sha256 = "sha256-NjavpgE9/bMe/ABvZpyHIUeYF1mqR5lhaep3wB79ucs=";
+  #    };
+  #  };
+  #  (import "${home-manager-source}/nixos")
+  #),
+  #_plasma-manager ? (
+  #  with rec {
+  #    nixpkgs = import <nixpkgs> { };
+  #    plasma-manager-source = nixpkgs.fetchFromGitHub {
+  #      owner = "nix-community";
+  #      repo = "plasma-manager";
+  #      rev = "f33173b9d22e554a6f869626bc01808d35995257";
+  #      sha256 = "sha256-pGF8L5g9QpkQtJP9JmNIRNZfcyhJHf7uT+d8tqI1h6Y=";
+  #    };
+  #  };
+  #    (import "${plasma-manager-source}/modules")
+  #),
   ...
 }:
+let
+      home-manager = if builtins.hasAttr "currentSystem" builtins then
+        with rec {
+          nixpkgs = import <nixpkgs> { };
+          home-manager-source = nixpkgs.fetchFromGitHub {
+            owner = "nix-community";
+            repo = "home-manager";
+            rev = "60bb110917844d354f3c18e05450606a435d2d10";
+            sha256 = "sha256-NjavpgE9/bMe/ABvZpyHIUeYF1mqR5lhaep3wB79ucs=";
+          };
+        };
+        (import "${home-manager-source}/nixos")
+      else
+         _home-manager;
+
+
+
+      plasma-manager = if builtins.hasAttr "currentSystem" builtins then
+      with rec {
+          nixpkgs = import <nixpkgs> { };
+          plasma-manager-source = nixpkgs.fetchFromGitHub {
+            owner = "nix-community";
+            repo = "plasma-manager";
+            rev = "f33173b9d22e554a6f869626bc01808d35995257";
+            sha256 = "sha256-pGF8L5g9QpkQtJP9JmNIRNZfcyhJHf7uT+d8tqI1h6Y=";
+          };
+      };
+     (import "${plasma-manager-source}/modules")
+     else
+      _plasma-manager;
+in
 {
   imports = [
 
