@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, ... }:
 {
   home.stateVersion = "23.11";
 
@@ -56,7 +56,6 @@
       #
       #
       configFile = {
-        # kwinrc.Plugins.keymapperEnabled = true;
 
         #
         # ~/.config/kdeglobals
@@ -67,6 +66,14 @@
           "KFileDialog Settings" = {
             "Show hidden files" = true;
           };
+        };
+
+        # ~/.config/kxkbrc
+        kxkbrc = {
+          Layout.LayoutList = "us";
+          Layout.Model = "pc105";
+          Layout.Use = "true";
+          Layout.VariantList = "altgr-intl";
         };
       };
     };

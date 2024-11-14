@@ -167,11 +167,9 @@ assertCorrectVersion
                   }
                 );
               }
-            ) (builtins.filter (x: x.wm == "Plasma") config.macos-keybindings)
+            ) (builtins.filter (x: x.de == "Plasma") config.macos-keybindings)
           )
-
         )
-
       ];
     }
 
