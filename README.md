@@ -58,8 +58,8 @@ Keyboard layout will be changed to English (intl., with AltGr dead keys) for key
 
 1. Add channel 
 ```
-$ nix-channel --add https://github.com/prinzdezibel/macos-keybindings/archive/main.tar.gz macos-keybindings
-$ nix-channel --update
+$ sudo nix-channel --add https://github.com/prinzdezibel/macos-keybindings/archive/main.tar.gz macos-keybindings
+$ sudo nix-channel --update
 ```
 
 2. Add macos-keybindings module to configuration.nix
