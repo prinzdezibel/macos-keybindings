@@ -9,33 +9,43 @@
 }:
 let
 
-  nixpkgsVersion = builtins.substring 0 5 lib.version ;
-  
-  msg = builtins.trace "Your current nixpkgs version is: ${nixpkgsVersion}"; 
-  _ = msg;
-  assertCorrectVersion = if nixpkgsVersion < "24.11" then abort ''
-    For keymapper to work, you need ot install nixpkg version >= 24.11.
-    
-    Your current nixpkgs version is: ${nixpkgsVersion}   
-    
-    Consider upgrading your system. E.g. for nixos 
-    $ sudo nix-channel --add https://nixos.org/channels/nixos-unstable nixos
-    $ sudo nixos-rebuild switch --upgrade
+  nixpkgsVersion = builtins.substring 0 5 lib.version;
 
-  '' else {...}@inputs: inputs;
+  msg = builtins.trace "Your current nixpkgs version is: ${nixpkgsVersion}";
+  #_ = msg;
+  # assertCorrectVersion =
+  #   if nixpkgsVersion < "24.11" then
+  #     abort ''
+  #       For keymapper to work, you need ot install nixpkg version >= 24.11.
 
-  # use nixpkgs version >= 24.05 for keymapper to work
-  # pinnedNixpkgs = builtins.fromJSON (builtins.readFile ../pinned-nixpkgs.json);
-  # nixpkgs' = builtins.fetchTarball {
-  #   url = "https://github.com/NixOS/nixpkgs/archive/${pinnedNixpkgs.rev}.tar.gz";
-  #   sha256 = "${pinnedNixpkgs.sha256}";
-  # };
-  # pkgs = import nixpkgs' {
-  #   inherit system;
-  #   #system = builtins.currentSystem;
-  #   config = { };
-  #   overlays = [ ];
-  # };
+  #       Your current nixpkgs version is: ${nixpkgsVersion}   
+
+  #       Consider upgrading your system. E.g. for nixos 
+  #       $ sudo nix-channel --add https://nixos.org/channels/nixos-unstable nixos
+  #       $ sudo nixos-rebuild switch --upgrade
+
+  #     ''
+  #   else
+  #     { ... }@inputs: inputs;
+
+  # use nixpkgs version >= 24.11 for keymapper to work
+  pkgs' =
+    if nixpkgsVersion < "24.11" then
+      with rec {
+        pinnedNixpkgs = builtins.fromJSON (builtins.readFile ../pinned-nixpkgs.json);
+        nixpkgs' = builtins.fetchTarball {
+          url = "https://github.com/NixOS/nixpkgs/archive/${pinnedNixpkgs.rev}.tar.gz";
+          sha256 = "${pinnedNixpkgs.sha256}";
+        };
+      };
+      (import nixpkgs' {
+        #inherit system;
+        #system = builtins.currentSystem;
+        config = { };
+        overlays = [ ];
+      })
+    else
+      pkgs;
 
   home-manager =
     # Hack to prevent indefinite recursions
@@ -78,9 +88,8 @@ let
     else
       _plasma-manager;
 in
-msg
-assertCorrectVersion
-{
+#msg assertCorrectVersion {
+msg {  
   imports = [
 
     home-manager
