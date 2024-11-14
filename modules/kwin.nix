@@ -14,13 +14,6 @@
       #
       shortcuts = {
 
-        ksmserver = {
-          "Lock Session" = [
-            "Screensaver"
-            "Ctrl+Shift+Eject" # Lock Session | now: Control + Shift + Eject | default: Meta+L
-          ];
-        };
-
         kwin = {
           "Show Desktop" = "none";
           "Overview" = "none"; # Toggle Overview | default: Meta+W

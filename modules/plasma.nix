@@ -14,13 +14,13 @@
       #
       shortcuts = {
 
-        # ksmserver = {
-        #   "Lock Session" = [
-        #     "Screensaver"
-        #     "Ctrl+Shift+Eject" # Lock Session | now: Control + Shift + Eject | default: Meta+L
-        #   ];
-        # };
-
+        ksmserver = {
+          "Lock Session" = [
+            "Screensaver"
+            "Ctrl+Shift+Eject" # Lock Session | now: Control + Shift + Eject | default: Meta+L
+          ];
+        };
+        
         # yields [services][systemsettings.desktop]
         "services/systemsettings.desktop" = {
           _launch = "Meta+<"; # Show System settings | now: Command + Shift + ,
