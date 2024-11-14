@@ -33,13 +33,16 @@
 let
       home-manager = if builtins.hasAttr "currentSystem" builtins then
         with rec {
-          nixpkgs = import <nixpkgs> { };
-          home-manager-source = nixpkgs.fetchFromGitHub {
-            owner = "nix-community";
-            repo = "home-manager";
-            rev = "60bb110917844d354f3c18e05450606a435d2d10";
-            sha256 = "sha256-NjavpgE9/bMe/ABvZpyHIUeYF1mqR5lhaep3wB79ucs=";
-          };
+          _nixpkgs = import <nixpkgs> {};
+          version = builtins.substring 0 5 _nixpkgs.lib.version;
+          home-manager-source = builtins.fetchTarball { url = "https://github.com/nix-community/home-manager/archive/release-${version}.tar.gz"; };
+
+          #home-manager-source = _nixpkgs.fetchFromGitHub {
+          #  owner = "nix-community";
+          #  repo = "home-manager";
+          #  rev = "60bb110917844d354f3c18e05450606a435d2d10";
+          #  sha256 = "sha256-NjavpgE9/bMe/ABvZpyHIUeYF1mqR5lhaep3wB79ucs=";
+          #};
         };
         (import "${home-manager-source}/nixos")
       else
@@ -50,12 +53,13 @@ let
       plasma-manager = if builtins.hasAttr "currentSystem" builtins then
       with rec {
           nixpkgs = import <nixpkgs> { };
-          plasma-manager-source = nixpkgs.fetchFromGitHub {
-            owner = "nix-community";
-            repo = "plasma-manager";
-            rev = "f33173b9d22e554a6f869626bc01808d35995257";
-            sha256 = "sha256-pGF8L5g9QpkQtJP9JmNIRNZfcyhJHf7uT+d8tqI1h6Y=";
-          };
+          plasma-manager-source = builtins.fetchTarball { url = "https://github.com/nix-community/plasma-manager/archive/trunk.tar.gz"; };
+          #plasma-manager-source = nixpkgs.fetchFromGitHub {
+          #  owner = "nix-community";
+          #  repo = "plasma-manager";
+          #  rev = "f33173b9d22e554a6f869626bc01808d35995257";
+          #  sha256 = "sha256-pGF8L5g9QpkQtJP9JmNIRNZfcyhJHf7uT+d8tqI1h6Y=";
+          #};
       };
      (import "${plasma-manager-source}/modules")
      else
