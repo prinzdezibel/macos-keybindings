@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  system ? builtins.currentSystem,
   _home-manager ? null,
   _plasma-manager ? null,
   #_home-manager ? (
@@ -31,6 +32,18 @@
   ...
 }:
 let
+      # use nixpkgs version >= 24.05 for keymapper to work
+      pinnedNixpkgs = builtins.fromJSON (builtins.readFile ../pinned-nixpkgs.json);
+      nixpkgs' = builtins.fetchTarball { url = "https://github.com/NixOS/nixpkgs/archive/${pinnedNixpkgs.rev}.tar.gz";
+        sha256 = "${pinnedNixpkgs.sha256}";
+        };
+      pkgs = import nixpkgs' {
+         # inherit system;
+         system = builtins.currentSystem;
+         config = {};
+         overlays = [];
+      };
+
       home-manager = if builtins.hasAttr "currentSystem" builtins then
         with rec {
           _nixpkgs = import <nixpkgs> {};

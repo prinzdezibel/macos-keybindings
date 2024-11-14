@@ -67,7 +67,7 @@ in
   # Kernel level key remapping happens via keymapper
   home.file.".config/keymapper.conf".source = ../keymapper.conf;
 
-  # KWin Script to make Keymapper application aware 
+  # KWin Script to make Keymapper application aware
   # (i.e. it knows about different window classes)
   home.file.".local/share/kwin/scripts/keymapper" = lib.mkIf (wm == "KWin") {
     source = ../script;
@@ -78,21 +78,6 @@ in
   home.file.".config/Code/User/keybindings.json".source = lib.mkIf (
     (__length (builtins.filter (x: x == "vs-code") apps)) != 0
   ) dVsCodeKeybindings;
-
-  # no HM
-  #   systemd.user.services.keymapper = {
-  #     enable = true;
-  #     wantedBy = [ "graphical-session.target" ];
-  #     description = "Keymapper client";
-  #     serviceConfig = {
-  #       #Type = "dbus";
-  #       #BusName = "com.github.houmain.Keymapper";
-  #       Type = "simple";
-  #       Restart = "on-failure";
-  #       StandardOutput = "journal";
-  #       StandardError = "journal";
-  #       ExecStart = "${pkgs.keymapper}/bin/keymapper --update --no-notify --verbose";
-  #     };
 
   systemd.user.services.keymapper = {
     Unit.Description = "Keymapper client";
