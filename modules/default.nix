@@ -5,79 +5,77 @@
   system ? builtins.currentSystem,
   _home-manager ? null,
   _plasma-manager ? null,
-  #_home-manager ? (
-  #  with rec {
-  #    nixpkgs = import <nixpkgs> { };
-  #    home-manager-source = nixpkgs.fetchFromGitHub {
-  #      owner = "nix-community";
-  #      repo = "home-manager";
-  #      rev = "60bb110917844d354f3c18e05450606a435d2d10";
-  #      sha256 = "sha256-NjavpgE9/bMe/ABvZpyHIUeYF1mqR5lhaep3wB79ucs=";
-  #    };
-  #  };
-  #  (import "${home-manager-source}/nixos")
-  #),
-  #_plasma-manager ? (
-  #  with rec {
-  #    nixpkgs = import <nixpkgs> { };
-  #    plasma-manager-source = nixpkgs.fetchFromGitHub {
-  #      owner = "nix-community";
-  #      repo = "plasma-manager";
-  #      rev = "f33173b9d22e554a6f869626bc01808d35995257";
-  #      sha256 = "sha256-pGF8L5g9QpkQtJP9JmNIRNZfcyhJHf7uT+d8tqI1h6Y=";
-  #    };
-  #  };
-  #    (import "${plasma-manager-source}/modules")
-  #),
   ...
 }:
 let
-      # use nixpkgs version >= 24.05 for keymapper to work
-      pinnedNixpkgs = builtins.fromJSON (builtins.readFile ../pinned-nixpkgs.json);
-      nixpkgs' = builtins.fetchTarball { url = "https://github.com/NixOS/nixpkgs/archive/${pinnedNixpkgs.rev}.tar.gz";
-        sha256 = "${pinnedNixpkgs.sha256}";
-        };
-      pkgs = import nixpkgs' {
-         # inherit system;
-         system = builtins.currentSystem;
-         config = {};
-         overlays = [];
-      };
 
-      home-manager = if builtins.hasAttr "currentSystem" builtins then
-        with rec {
-          _nixpkgs = import <nixpkgs> {};
-          version = builtins.substring 0 5 _nixpkgs.lib.version;
-          home-manager-source = builtins.fetchTarball { url = "https://github.com/nix-community/home-manager/archive/release-${version}.tar.gz"; };
+  nixpkgsVersion = builtins.substring 0 5 lib.version ;
+  assertCorrectVersion = if nixpkgsVersion < "24.11" then abort ''
+    For keymapper to work, you need ot install nixpkg version >= 24.11.
+    
+    Your current nixpkgs version is: ${nixpkgsVersion}   
+    
+    Consider upgrading your system 
+    $ nix-channel --add https://nixos.org/channels/channel-name nixos-24.11
+    $	nix-channel --update
+    $ nixos rebuild --upgrade
 
-          #home-manager-source = _nixpkgs.fetchFromGitHub {
-          #  owner = "nix-community";
-          #  repo = "home-manager";
-          #  rev = "60bb110917844d354f3c18e05450606a435d2d10";
-          #  sha256 = "sha256-NjavpgE9/bMe/ABvZpyHIUeYF1mqR5lhaep3wB79ucs=";
-          #};
-        };
-        (import "${home-manager-source}/nixos")
-      else
-         _home-manager;
+  '' else {...}@inputs: inputs;
 
+  # use nixpkgs version >= 24.05 for keymapper to work
+  # pinnedNixpkgs = builtins.fromJSON (builtins.readFile ../pinned-nixpkgs.json);
+  # nixpkgs' = builtins.fetchTarball {
+  #   url = "https://github.com/NixOS/nixpkgs/archive/${pinnedNixpkgs.rev}.tar.gz";
+  #   sha256 = "${pinnedNixpkgs.sha256}";
+  # };
+  # pkgs = import nixpkgs' {
+  #   inherit system;
+  #   #system = builtins.currentSystem;
+  #   config = { };
+  #   overlays = [ ];
+  # };
 
-
-      plasma-manager = if builtins.hasAttr "currentSystem" builtins then
+  home-manager =
+    # Hack to prevent indefinite recursions
+    if builtins.hasAttr "currentSystem" builtins then
       with rec {
-          nixpkgs = import <nixpkgs> { };
-          plasma-manager-source = builtins.fetchTarball { url = "https://github.com/nix-community/plasma-manager/archive/trunk.tar.gz"; };
-          #plasma-manager-source = nixpkgs.fetchFromGitHub {
-          #  owner = "nix-community";
-          #  repo = "plasma-manager";
-          #  rev = "f33173b9d22e554a6f869626bc01808d35995257";
-          #  sha256 = "sha256-pGF8L5g9QpkQtJP9JmNIRNZfcyhJHf7uT+d8tqI1h6Y=";
-          #};
+        _nixpkgs = import <nixpkgs> { };
+        version = builtins.substring 0 5 _nixpkgs.lib.version;
+        home-manager-source = builtins.fetchTarball {
+          url = "https://github.com/nix-community/home-manager/archive/release-${version}.tar.gz";
+        };
+
+        #home-manager-source = _nixpkgs.fetchFromGitHub {
+        #  owner = "nix-community";
+        #  repo = "home-manager";
+        #  rev = "60bb110917844d354f3c18e05450606a435d2d10";
+        #  sha256 = "sha256-NjavpgE9/bMe/ABvZpyHIUeYF1mqR5lhaep3wB79ucs=";
+        #};
       };
-     (import "${plasma-manager-source}/modules")
-     else
+      (import "${home-manager-source}/nixos")
+    else
+      _home-manager;
+
+  plasma-manager =
+    # Hack to prevent indefinite recursions
+    if builtins.hasAttr "currentSystem" builtins then
+      with rec {
+        nixpkgs = import <nixpkgs> { };
+        plasma-manager-source = builtins.fetchTarball {
+          url = "https://github.com/nix-community/plasma-manager/archive/trunk.tar.gz";
+        };
+        #plasma-manager-source = nixpkgs.fetchFromGitHub {
+        #  owner = "nix-community";
+        #  repo = "plasma-manager";
+        #  rev = "f33173b9d22e554a6f869626bc01808d35995257";
+        #  sha256 = "sha256-pGF8L5g9QpkQtJP9JmNIRNZfcyhJHf7uT+d8tqI1h6Y=";
+        #};
+      };
+      (import "${plasma-manager-source}/modules")
+    else
       _plasma-manager;
 in
+assertCorrectVersion
 {
   imports = [
 

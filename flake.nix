@@ -48,8 +48,8 @@
               pkgs = pkgs;
             }
             // {
-              home-manager = home-manager-module;
-              plasma-manager = plasma-manager-module;
+              _home-manager = home-manager-module;
+              _plasma-manager = plasma-manager-module;
             }
           ))
         );
