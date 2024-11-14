@@ -10,6 +10,9 @@
 let
 
   nixpkgsVersion = builtins.substring 0 5 lib.version ;
+  
+  msg = builtins.trace "Your current nixpkgs version is: ${nixpkgsVersion}"; 
+  _ = msg;
   assertCorrectVersion = if nixpkgsVersion < "24.11" then abort ''
     For keymapper to work, you need ot install nixpkg version >= 24.11.
     
@@ -75,6 +78,7 @@ let
     else
       _plasma-manager;
 in
+msg
 assertCorrectVersion
 {
   imports = [
