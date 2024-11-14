@@ -18,10 +18,9 @@ let
     
     Your current nixpkgs version is: ${nixpkgsVersion}   
     
-    Consider upgrading your system 
-    $ nix-channel --add https://nixos.org/channels/channel-name nixos-24.11
-    $	nix-channel --update
-    $ nixos rebuild --upgrade
+    Consider upgrading your system. E.g. for nixos 
+    $ sudo nix-channel --add https://nixos.org/channels/nixos-unstable nixos
+    $ sudo nixos-rebuild switch --upgrade
 
   '' else {...}@inputs: inputs;
 
@@ -44,8 +43,9 @@ let
       with rec {
         _nixpkgs = import <nixpkgs> { };
         version = builtins.substring 0 5 _nixpkgs.lib.version;
+        maxVersion = if version > "24.05" then "24.05" else version;
         home-manager-source = builtins.fetchTarball {
-          url = "https://github.com/nix-community/home-manager/archive/release-${version}.tar.gz";
+          url = "https://github.com/nix-community/home-manager/archive/release-${maxVersion}.tar.gz";
         };
 
         #home-manager-source = _nixpkgs.fetchFromGitHub {
