@@ -6,12 +6,13 @@
   ...
 }:
 let
+  versions = builtins.fromJSON (builtins.readFile ../version-pinning.json);
   linuxNegativeBindings =
     pkgs.fetchFromGitHub {
       owner = "codebling";
       repo = "vs-code-default-keybindings";
-      rev = "8b5cca139fd94c537c55433476b74f4aaace13c5";
-      sha256 = "sha256-BxA1L3ZeAtcg4PDPUWbpK8PPg/JaQ8SOTtQafaRhMUY=";
+      rev = "${versions.vs-code-default-keybindings.rev}";
+      sha256 = "${versions.vs-code-default-keybindings.sha256}";
     }
     + "/linux.negative.keybindings.json";
 
@@ -19,8 +20,8 @@ let
     pkgs.fetchFromGitHub {
       owner = "codebling";
       repo = "vs-code-default-keybindings";
-      rev = "8b5cca139fd94c537c55433476b74f4aaace13c5";
-      sha256 = "sha256-BxA1L3ZeAtcg4PDPUWbpK8PPg/JaQ8SOTtQafaRhMUY=";
+      rev = "${versions.vs-code-default-keybindings.rev}";
+      sha256 = "${versions.vs-code-default-keybindings.sha256}";
     }
     + "/macos.keybindings.json";
 
@@ -33,33 +34,6 @@ let
     ];
     system = pkgs.system;
   };
-
-  #   fsKwinScript = lib.fileset;
-  #   dKwinScript = pkgs.stdenv.mkDerivation {
-  #     name = "fileset";
-  #     src = fsKwinScript.toSource {
-  #       root = ./../script;
-  #       fileset = ./../script;
-  #     };
-  #     postInstall = ''
-  #       mkdir $out
-  #       cp -R * $out
-  #     '';
-  #   };
-
-  #   fsKeymapperConfig = lib.fileset;
-  #   dKeymapperConfig = pkgs.stdenv.mkDerivation {
-  #     name = "fileset";
-  #     src = fsKeymapperConfig.toSource {
-  #       root = ./..;
-  #       fileset = ./../keymapper.conf;
-  #     };
-  #     postInstall = ''
-  #       mkdir $out
-  #       cp keymapper.conf $out
-  #     '';
-  #   };
-
 in
 {
   home.stateVersion = "23.11";

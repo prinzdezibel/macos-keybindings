@@ -30,15 +30,19 @@ Keyboard layout will be changed to English (intl., with AltGr dead keys) for key
   description = "NixOS configuration";
 
   inputs = {
+
+    [...]
+
     macos-keybindings = {
        url = "github:prinzdezibel/macos-keybindings";
+       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
   
   outputs = {self, macos-keybindings, ...} : {
     nixosConfigurations.nixos = inputs.nixpkgs.lib.nixosSystem {
       modules = [
-          macos-keybindings.modules
+          macos-keybindings.nixosModules
           {
             accounts = [{
                 user = "michael";
@@ -69,8 +73,7 @@ $ sudo nix-channel --update
 {
   imports = [
     ./hardware-configuration.nix
-
-    <macos-keybindings/modules>
+    <macos-keybindings/nixosModules>
   ]
 
   macos-keybindings = [{

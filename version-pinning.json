@@ -1,0 +1,9 @@
+{
+  "vs-code-default-keybindings": {
+    "rev": "8b5cca139fd94c537c55433476b74f4aaace13c5",
+    "sha256": "sha256-BxA1L3ZeAtcg4PDPUWbpK8PPg/JaQ8SOTtQafaRhMUY="
+  },
+  "nixpkgs": {
+    "sha256": "1lr1h35prqkd1mkmzriwlpvxcb34kmhc9dnr48gkm8hh089hifmx"
+  }
+}

@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  system ? builtins.currentSystem,
   _home-manager ? null,
   _plasma-manager ? null,
   ...
@@ -11,48 +10,25 @@ let
 
   nixpkgsVersion = builtins.substring 0 5 lib.version;
 
-  msg = builtins.trace "Your current nixpkgs version is: ${nixpkgsVersion}";
-  #_ = msg;
-  # assertCorrectVersion =
-  #   if nixpkgsVersion < "24.11" then
-  #     abort ''
-  #       For keymapper to work, you need ot install nixpkg version >= 24.11.
+  #msg = builtins.trace "Your current nixpkgs version is: ${nixpkgsVersion}";
 
-  #       Your current nixpkgs version is: ${nixpkgsVersion}   
-
-  #       Consider upgrading your system. E.g. for nixos 
-  #       $ sudo nix-channel --add https://nixos.org/channels/nixos-unstable nixos
-  #       $ sudo nixos-rebuild switch --upgrade
-
-  #     ''
-  #   else
-  #     { ... }@inputs: inputs;
-
-  # use nixpkgs version >= 24.11 for keymapper to work
-  pkgs' =
+  assertCorrectVersion =
     if nixpkgsVersion < "24.11" then
-      with rec {
-        pinnedNixpkgs = builtins.fromJSON (builtins.readFile ../pinned-nixpkgs.json);
-        nixpkgs' = builtins.fetchTarball {
-          url = "https://github.com/NixOS/nixpkgs/archive/${pinnedNixpkgs.rev}.tar.gz";
-          sha256 = "${pinnedNixpkgs.sha256}";
-        };
-      };
-      (import nixpkgs' {
-        #inherit system;
-        #system = builtins.currentSystem;
-        config = { };
-        overlays = [ ];
-      })
+      abort ''
+        For keymapper to work, you need ot install nixpkg version >= 24.11.
+
+        Your current nixpkgs version is: ${nixpkgsVersion}   
+      ''
     else
-      pkgs;
+      { ... }@inputs: inputs;
 
   home-manager =
     # Hack to prevent indefinite recursions
     if builtins.hasAttr "currentSystem" builtins then
       with rec {
-        _nixpkgs = import <nixpkgs> { };
-        version = builtins.substring 0 5 _nixpkgs.lib.version;
+        pkgs = import <nixpkgs> { };
+        version = builtins.substring 0 5 pkgs.lib.version;
+        # 24.11 not public yet
         maxVersion = if version > "24.05" then "24.05" else version;
         home-manager-source = builtins.fetchTarball {
           url = "https://github.com/nix-community/home-manager/archive/release-${maxVersion}.tar.gz";
@@ -73,11 +49,11 @@ let
     # Hack to prevent indefinite recursions
     if builtins.hasAttr "currentSystem" builtins then
       with rec {
-        nixpkgs = import <nixpkgs> { };
         plasma-manager-source = builtins.fetchTarball {
           url = "https://github.com/nix-community/plasma-manager/archive/trunk.tar.gz";
         };
-        #plasma-manager-source = nixpkgs.fetchFromGitHub {
+        #pkgs = import <nixpkgs> { };
+        #plasma-manager-source = pkgs.fetchFromGitHub {
         #  owner = "nix-community";
         #  repo = "plasma-manager";
         #  rev = "f33173b9d22e554a6f869626bc01808d35995257";
@@ -88,8 +64,7 @@ let
     else
       _plasma-manager;
 in
-#msg assertCorrectVersion {
-msg {  
+assertCorrectVersion {
   imports = [
 
     home-manager
