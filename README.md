@@ -2,12 +2,13 @@
 
 A MacOS keymapper for NixOS.
 
-## Prerequisites
+## Requirements
 
 - NixOS Linux
 - Wayland or Xorg
 - KWin window manager
 - KDE Plasma Desktop
+- English keyboard layout
 
 
 ## Features
