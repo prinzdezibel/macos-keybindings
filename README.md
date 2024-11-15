@@ -73,7 +73,7 @@ $ sudo nix-channel --update
 {
   imports = [
     ./hardware-configuration.nix
-    <macos-keybindings/nixosModules>
+    <macos-keybindings/modules>
   ]
 
   macos-keybindings = [{
