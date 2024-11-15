@@ -31,28 +31,25 @@
       plasma-manager-module = plasma-manager.homeManagerModules.plasma-manager;
     in
     {
-      nixosModules = rec {
-
-        macos-keybindings = (
+      modules = (
+        {
+          config,
+          lib,
+          pkgs,
+          utils,
+          ...
+        }@inputs:
+        (import ./modules (
           {
-            config,
-            lib,
-            pkgs,
-            utils,
-            ...
-          }@inputs:
-          (import ./modules (
-            {
-              config = config;
-              lib = lib;
-              pkgs = pkgs;
-            }
-            // {
-              _home-manager = home-manager-module;
-              _plasma-manager = plasma-manager-module;
-            }
-          ))
-        );
-      };
+            config = config;
+            lib = lib;
+            pkgs = pkgs;
+          }
+          // {
+            _home-manager = home-manager-module;
+            _plasma-manager = plasma-manager-module;
+          }
+        ))
+      );
     };
 }
