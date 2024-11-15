@@ -1,4 +1,4 @@
 {...}:
 {
-      modules = import ./modules;
+      nixosModules = import ./modules;
 }
