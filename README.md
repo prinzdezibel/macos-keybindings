@@ -35,11 +35,10 @@ Keyboard layout will be changed to English (intl., with AltGr dead keys) for key
     };
   };
   
-  outputs = {self, ....}@inputs:{
+  outputs = {self, macos-keybindings, ...} : {
     nixosConfigurations.nixos = inputs.nixpkgs.lib.nixosSystem {
       modules = [
-
-          inputs.macos-keybindings.modules
+          macos-keybindings.modules
           {
             accounts = [{
                 user = "michael";
