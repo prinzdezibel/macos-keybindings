@@ -77,6 +77,16 @@
           Layout.Use = "true";
           Layout.VariantList = "altgr-intl";
         };
+
+        # ~/.config/krunnerrc
+        krunnerrc = {
+          General.FreeFloating = "true";
+          General.historyBehavior = "Disabled";
+          Plugins.baloosearchEnabled = "true";
+          Plugins.krunner_appstreamEnabled = "false";
+          Plugina.krunner_dictionaryEnabled = "false";
+          Plugins.krunner_katesessionsEnabled = "false";
+        };
       };
     };
   };
