@@ -33,6 +33,8 @@ Keyboard layout will be changed to English (intl., with AltGr dead keys) for key
 
     [...]
 
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+
     macos-keybindings = {
        url = "github:prinzdezibel/macos-keybindings";
        inputs.nixpkgs.follows = "nixpkgs";
