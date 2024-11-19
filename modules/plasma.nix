@@ -31,7 +31,9 @@
         };
 
         "services/org.kde.krunner.desktop" = {
-          RunClipboard = "Meta+Space";
+          RunClipboard = "none"; # Run command on clipboard content
+          _launch = "Meta+Space";
+
         };
 
         "org_kde_powerdevil" = {
