@@ -1,6 +1,6 @@
 # macos-keybindings
 
-A MacOS keymapper for NixOS.
+MacOS keybindings for NixOS
 
 ## Requirements
 
