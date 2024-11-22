@@ -33,7 +33,11 @@
         "services/org.kde.krunner.desktop" = {
           RunClipboard = "none"; # Run command on clipboard content
           _launch = "Meta+Space";
+        };
 
+        "services/org.kde.spectacle.desktop" = {
+          RecordRegion = "Meta+$"; # default: Meta+R\tMeta+Shift+R
+          _launch = "none"; # default: Esc\tMeta+Shift+S\tPrint
         };
 
         "org_kde_powerdevil" = {
