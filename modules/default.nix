@@ -23,15 +23,11 @@ let
       { ... }@inputs: inputs;
 
   home-manager =
-    # Hack to prevent indefinite recursions
+    # Check for currentSystem to prevent indefinite recursion
     if builtins.hasAttr "currentSystem" builtins then
       with rec {
-        pkgs = import <nixpkgs> { };
-        version = builtins.substring 0 5 pkgs.lib.version;
-        # 24.11 not public yet
-        maxVersion = if version > "24.05" then "24.05" else version;
         home-manager-source = builtins.fetchTarball {
-          url = "https://github.com/nix-community/home-manager/archive/release-${maxVersion}.tar.gz";
+          url = "https://github.com/nix-community/home-manager/archive/release-${nixpkgsVersion}.tar.gz";
         };
       };
       (import "${home-manager-source}/nixos")
@@ -39,7 +35,7 @@ let
       _home-manager;
 
   plasma-manager =
-    # Hack to prevent indefinite recursions
+    # Check for currentSystem to prevent indefinite recursion
     if builtins.hasAttr "currentSystem" builtins then
       with rec {
         plasma-manager-source = builtins.fetchTarball {
