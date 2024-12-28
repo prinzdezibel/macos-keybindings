@@ -36,7 +36,8 @@
         };
 
         "services/org.kde.spectacle.desktop" = {
-          RecordRegion = "Meta+$"; # default: Meta+R\tMeta+Shift+R
+          #RecordRegion = "Meta+$"; # default: Meta+R\tMeta+Shift+R
+          RectangularRegionScreenShot = "Meta+$"; # default: Meta+Shift+Print\t
           _launch = "none"; # default: Esc\tMeta+Shift+S\tPrint
         };
 
