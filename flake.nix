@@ -4,10 +4,11 @@
   inputs = {
 
     # Nix Package Manager
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
     home-manager = {
-      url = "github:nix-community/home-manager?ref=release-24.11";
+      #url = "github:nix-community/home-manager?ref=release-24.11";
+      url = "github:nix-community/home-manager?ref=master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
